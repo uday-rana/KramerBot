@@ -7,15 +7,16 @@ import json
 import requests
 from keep_alive import keep_alive
 
-
-def seinfeld():
+def seinfeld(guess=False):
     response = requests.get("https://seinfeld-quotes.herokuapp.com/random")
     data = json.loads(response.text)
-    quote = "\"" + data["quote"] + "\"" + ' -' + data[
-        "author"] + ", Season " + data["season"] + ", Episode " + data[
-            "episode"]
-    return (quote)
 
+    quote = "```" + data["quote"] + "```"
+    if guess == False:
+        quote = quote + ' -' + data["author"]
+    quote = quote + " (Season " + data["season"] + ", Episode " + data[
+        "episode"] + ')'
+    return (quote)
 
 my_secret = os.environ['TOKEN']
 client = discord.Client()
@@ -33,6 +34,10 @@ async def on_message(message):
 
     if message.content.startswith('$seinfeld'):
         quote = seinfeld()
+        await message.channel.send(quote)
+
+    if message.content.startswith('$guess'):
+        quote = seinfeld(True)
         await message.channel.send(quote)
 
 
